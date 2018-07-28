@@ -1,0 +1,11 @@
+content	firesteg	jar:chrome/firesteg.jar!/content/
+locale	firesteg	en-US	jar:chrome/firesteg.jar!/locale/en-US/
+locale	firesteg	de-DE	jar:chrome/firesteg.jar!/locale/de-DE/
+locale	firesteg	es-ES	jar:chrome/firesteg.jar!/locale/es-ES/
+locale	firesteg	fr-FR	jar:chrome/firesteg.jar!/locale/fr-FR/
+locale	firesteg	ja-JP	jar:chrome/firesteg.jar!/locale/ja-JP/
+locale	firesteg	pl-PL	jar:chrome/firesteg.jar!/locale/pl-PL/
+locale	firesteg	pt-BR	jar:chrome/firesteg.jar!/locale/pt-BR/
+locale	firesteg	tr-TR	jar:chrome/firesteg.jar!/locale/tr-TR/
+style	chrome://global/content/customizeToolbar.xul	chrome://firesteg/content/button.css
+overlay	chrome://browser/content/browser.xul	chrome://firesteg/content/firefoxOverlay.xul

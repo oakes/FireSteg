@@ -1,0 +1,26 @@
+<!ENTITY firesteg.tab.tools "ツール">
+<!ENTITY firesteg.tab.settings "設定">
+<!ENTITY firesteg.caption.hide "隠蔽">
+<!ENTITY firesteg.caption.extract "展開">
+<!ENTITY firesteg.caption.files "隠ぺいするファイル">
+<!ENTITY firesteg.caption.cover "カバー画像">
+<!ENTITY firesteg.caption.where.images "隠ぺいした画像の配置先">
+<!ENTITY firesteg.caption.where.files "ファイルの展開先">
+<!ENTITY firesteg.caption.where.java "Java VM の場所">
+<!ENTITY firesteg.caption.memory "Java VM が利用可能なメモリ (MB)">
+<!ENTITY firesteg.button.browse.dots "参照...">
+<!ENTITY firesteg.button.remove "除去">
+<!ENTITY firesteg.button.save "保存">
+<!ENTITY firesteg.description.filesize "ファイルのサイズ:">
+<!ENTITY firesteg.description.zero "0.00 KB">
+<!ENTITY firesteg.description.space "画像内の余裕:">
+<!ENTITY firesteg.description.void "0&#37; 利用">
+<!ENTITY firesteg.radio.desktop "デスクトップ">
+<!ENTITY firesteg.radio.hiddenfolder "Firefox プロファイル内の FireSteg_Hidden フォルダ">
+<!ENTITY firesteg.radio.choose.dir "自分でディレクトリを選択...">
+<!ENTITY firesteg.radio.extractedfolder "Firefox プロファイル内の FireSteg_Extracted フォルダ">
+<!ENTITY firesteg.radio.make.a.guess "適当に推測する">
+<!ENTITY firesteg.radio.choose.file "自分でファイルを選択...">
+<!ENTITY firesteg.dialog.file "Select at least one file">
+<!ENTITY firesteg.dialog.cover "Select at least one PNG or JPEG image">
+<!ENTITY firesteg.dialog.extract "Select at least one PNG image">

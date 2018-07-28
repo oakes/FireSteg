@@ -1,0 +1,26 @@
+<!ENTITY firesteg.tab.tools "Araçlar">
+<!ENTITY firesteg.tab.settings "Ayarlar">
+<!ENTITY firesteg.caption.hide "Gizle">
+<!ENTITY firesteg.caption.extract "Çıkart">
+<!ENTITY firesteg.caption.files "Gizlemek için dosyalara">
+<!ENTITY firesteg.caption.cover "Kapat resimlerine">
+<!ENTITY firesteg.caption.where.images "Gizlenen resimler nerede tutulsun">
+<!ENTITY firesteg.caption.where.files "Çıkartılan dosyalar nerede tutulsun">
+<!ENTITY firesteg.caption.where.java "Java VM dizininde">
+<!ENTITY firesteg.caption.memory "Java VM&apos;nin kullanabileceği hafıza (MB)">
+<!ENTITY firesteg.button.browse.dots "Gözat...">
+<!ENTITY firesteg.button.remove "Sil">
+<!ENTITY firesteg.button.save "Kaydet">
+<!ENTITY firesteg.description.filesize "Dosyanın boyutu:">
+<!ENTITY firesteg.description.zero "0.00 KB">
+<!ENTITY firesteg.description.space "Resimlerdeki boşluk:">
+<!ENTITY firesteg.description.void "0&#37; dolu">
+<!ENTITY firesteg.radio.desktop "Masaüstü">
+<!ENTITY firesteg.radio.hiddenfolder "Firefox profilindeki FireSteg_Hidden klasörü">
+<!ENTITY firesteg.radio.choose.dir "Kendiniz seçin...">
+<!ENTITY firesteg.radio.extractedfolder "Firefox profilindeki FireSteg_Extracted klasörü">
+<!ENTITY firesteg.radio.make.a.guess "İyi bir tahmin yap">
+<!ENTITY firesteg.radio.choose.file "Kendiniz seçin...">
+<!ENTITY firesteg.dialog.file "En az bir dosya seçin">
+<!ENTITY firesteg.dialog.cover "En az bir PNG yada JPEG resmi seçin">
+<!ENTITY firesteg.dialog.extract "En az bir PNG resmi seçin">

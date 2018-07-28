@@ -1,0 +1,4 @@
+<!ENTITY overlay.key "F">
+<!ENTITY overlay.menuitem.add.to.hide "FireSteg に追加 (隠蔽する)">
+<!ENTITY overlay.menuitem.add.to.cover "FireSteg に追加 (カバー画像)">
+<!ENTITY overlay.menuitem.add.to.extract "FireSteg に追加 (展開する)">

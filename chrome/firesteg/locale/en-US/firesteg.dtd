@@ -1,0 +1,26 @@
+<!ENTITY firesteg.tab.tools "Tools">
+<!ENTITY firesteg.tab.settings "Settings">
+<!ENTITY firesteg.caption.hide "Hide">
+<!ENTITY firesteg.caption.extract "Extract">
+<!ENTITY firesteg.caption.files "Files to hide">
+<!ENTITY firesteg.caption.cover "Cover images">
+<!ENTITY firesteg.caption.where.images "Where to put images after hiding">
+<!ENTITY firesteg.caption.where.files "Where to put files after extracting">
+<!ENTITY firesteg.caption.where.java "Location of Java VM">
+<!ENTITY firesteg.caption.memory "Memory the Java VM can use (in MB)">
+<!ENTITY firesteg.button.browse.dots "Browse...">
+<!ENTITY firesteg.button.remove "Remove">
+<!ENTITY firesteg.button.save "Save">
+<!ENTITY firesteg.description.filesize "Size of Files: ">
+<!ENTITY firesteg.description.zero "0.00 KB">
+<!ENTITY firesteg.description.space "Space in Images: ">
+<!ENTITY firesteg.description.void "0&#37; full">
+<!ENTITY firesteg.radio.desktop "Desktop">
+<!ENTITY firesteg.radio.hiddenfolder "FireSteg_Hidden folder in Firefox profile">
+<!ENTITY firesteg.radio.choose.dir "Choose your own directory...">
+<!ENTITY firesteg.radio.extractedfolder "FireSteg_Extracted folder in Firefox profile">
+<!ENTITY firesteg.radio.make.a.guess "Make a good guess">
+<!ENTITY firesteg.radio.choose.file "Choose your own file...">
+<!ENTITY firesteg.dialog.file "Select at least one file">
+<!ENTITY firesteg.dialog.cover "Select at least one PNG or JPEG image">
+<!ENTITY firesteg.dialog.extract "Select at least one PNG image">

@@ -1,0 +1,4 @@
+<!ENTITY overlay.key "F">
+<!ENTITY overlay.menuitem.add.to.hide "Añadir a FireSteg (archivo para ocultar)">
+<!ENTITY overlay.menuitem.add.to.cover "Añadir a FireSteg (imagen de portada)">
+<!ENTITY overlay.menuitem.add.to.extract "Añadir a FireSteg (archivo para extraer)">

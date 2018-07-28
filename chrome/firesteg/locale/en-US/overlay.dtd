@@ -1,0 +1,4 @@
+<!ENTITY overlay.key "F">
+<!ENTITY overlay.menuitem.add.to.hide "Add to FireSteg (file to hide)">
+<!ENTITY overlay.menuitem.add.to.cover "Add to FireSteg (cover image)">
+<!ENTITY overlay.menuitem.add.to.extract "Add to FireSteg (file to extract)">

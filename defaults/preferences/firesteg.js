@@ -1,0 +1,9 @@
+pref("extensions.firesteg@yourdomain.com.description", "chrome://firesteg/locale/firesteg.properties");
+pref("extensions.firesteg.extractTo", "0");
+pref("extensions.firesteg.hideTo", "0");
+pref("extensions.firesteg.maxMem", "1024");
+pref("extensions.firesteg.javaVM", "");
+pref("extensions.firesteg.hide-list", "");
+pref("extensions.firesteg.cover-list", "");
+pref("extensions.firesteg.extract-list", "");
+pref("extensions.firesteg.isFirstRun", "true");

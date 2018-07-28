@@ -1,0 +1,4 @@
+<!ENTITY overlay.key "F">
+<!ENTITY overlay.menuitem.add.to.hide "Dodaj do FireStega (plik do ukrycia)">
+<!ENTITY overlay.menuitem.add.to.cover "Dodaj do FireStega (okładka)">
+<!ENTITY overlay.menuitem.add.to.extract "Dodaj do FireStega (plik do rozpakowania)">

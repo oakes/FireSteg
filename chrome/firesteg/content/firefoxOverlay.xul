@@ -1,0 +1,127 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/css" href="chrome://firesteg/content/button.css"?>
+<!DOCTYPE overlay SYSTEM "chrome://firesteg/locale/overlay.dtd" >
+<overlay id="firestegOverlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<stringbundleset id="stringbundleset">
+   <stringbundle id="firesteg_strings" src="chrome://firesteg/locale/firesteg.properties"/>
+</stringbundleset>
+<script>
+
+window.addEventListener("load", initOverlay, false);
+
+function initOverlay() {
+  var menu = document.getElementById("contentAreaContextMenu");
+  menu.addEventListener("popupshowing", contextPopupShowing, false);
+}
+
+function contextPopupShowing() {
+  document.getElementById("separator").hidden = (document.popupNode.localName != "IMG");
+  document.getElementById("menu1").hidden = (document.popupNode.localName != "IMG");
+  document.getElementById("menu2").hidden = (document.popupNode.localName != "IMG");
+  document.getElementById("menu3").hidden = (document.popupNode.localName != "IMG");
+}
+
+function saveImage(menuNum)
+{
+
+	var url;
+	if (gContextMenu.mediaURL)
+		url = gContextMenu.mediaURL;
+	else
+		url = gContextMenu.imageURL;
+	var listID;
+
+	if (menuNum == 1) listID = "hide-list";
+	else if (menuNum == 2) listID = "cover-list";
+	else listID = "extract-list";
+	
+	var fileObject = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("ProfD", Components.interfaces.nsIFile);
+	fileObject.append("FireSteg_Temp");
+	if (!fileObject.exists() || !fileObject.isDirectory()) fileObject.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0777);
+	
+	var uriObject = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService).newURI(url, null, null);
+	var fname;
+	try
+    {
+      fname = getDefaultFileName(null, uriObject, null, null);
+    }
+    catch (e)
+    {
+      fname = getDefaultFileName(null, null, uriObject, null);
+    }
+
+	var no_valid_ext = document.getElementById('firesteg_strings').getString("NoValidExt");
+	var no_png = document.getElementById('firesteg_strings').getString("NoPng");
+	
+	var name = fname.substring(0, fname.lastIndexOf("."));
+	var ext = fname.substring(fname.lastIndexOf(".") + 1);
+	if (listID == "cover-list" &amp;&amp; !(ext == "png" || ext == "jpeg" || ext == "jpg" || ext == "PNG" || ext == "JPEG" || ext == "JPG")) {
+		if (!confirm(no_valid_ext)) return;
+	}
+	else if (listID == "extract-list" &amp;&amp; !(ext == "png" || ext == "PNG")) {
+		if (!confirm(no_png)) return;
+	}
+	
+	fileObject.append(fname);
+	
+	if (fileObject.exists()) fileObject.createUnique(0, 0777);
+	
+	var cachekey = Components.classes['@mozilla.org/supports-string;1'].createInstance(Components.interfaces.nsISupportsString);
+	var urifix = Components.classes['@mozilla.org/docshell/urifixup;1'].getService(Components.interfaces.nsIURIFixup);
+	var persist = Components.classes['@mozilla.org/embedding/browser/nsWebBrowserPersist;1'].createInstance(Components.interfaces.nsIWebBrowserPersist);
+
+	var uri = urifix.createFixupURI(url, 0);
+	var hosturi = (uri.host.length > 0) ? urifix.createFixupURI(uri.host, 0) : null;
+
+	cachekey.data = url;
+	
+	persist.persistFlags = Components.interfaces.nsIWebBrowserPersist.PERSIST_FLAGS_FROM_CACHE | Components.interfaces.nsIWebBrowserPersist.PERSIST_FLAGS_CLEANUP_ON_FAILURE;
+	persist.saveURI(uri, cachekey, hosturi, null, null, fileObject);
+
+	var arrayDelimiter = "*;*";
+	var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+	var currentList = prefs.getCharPref("extensions.firesteg." + listID);
+	prefs.setCharPref("extensions.firesteg." + listID, currentList + fileObject.path + arrayDelimiter);
+	
+	var sidebarWindow = document.getElementById("sidebar").contentWindow;
+	if (sidebarWindow.location.href == "chrome://firesteg/content/firesteg.xul") {
+		alert(document.getElementById('firesteg_strings').getString("SavingImage"));
+		sidebarWindow.addFile(fileObject, listID, false);
+	}
+}
+</script>
+
+  <toolbarpalette id="BrowserToolbarPalette">
+    <toolbarbutton id="firesteg-button"
+	label="FireSteg"
+	oncommand="toggleSidebar('viewFireSteg');"
+	class="toolbarbutton-1 chromeclass-toolbar-additional custombutton"
+	/>
+  </toolbarpalette>
+  
+  <menupopup id="viewSidebarMenu">
+    <menuitem key="key_openFireSteg" observes="viewFireSteg"  />
+  </menupopup>
+
+  <keyset id="mainKeyset">
+    <key id="key_openFireSteg" command="viewFireSteg" key="&overlay.key;" modifiers="shift accel" />
+  </keyset>
+
+  <menupopup id="contentAreaContextMenu" >
+    <menuseparator id="separator" />
+    <menuitem id="menu1" label="&overlay.menuitem.add.to.hide;" oncommand="saveImage(1);" />
+    <menuitem id="menu2" label="&overlay.menuitem.add.to.cover;" oncommand="saveImage(2);" />
+    <menuitem id="menu3" label="&overlay.menuitem.add.to.extract;" oncommand="saveImage(3);" />
+  </menupopup >
+  
+  <broadcasterset id="mainBroadcasterSet"> 
+    <broadcaster id="viewFireSteg" 
+                 label="FireSteg"
+                 autoCheck="false"
+                 type="checkbox"
+                 group="sidebar"
+                 sidebarurl="chrome://firesteg/content/firesteg.xul"
+                 sidebartitle="FireSteg"
+                 oncommand="toggleSidebar('viewFireSteg');" />
+  </broadcasterset>
+</overlay>

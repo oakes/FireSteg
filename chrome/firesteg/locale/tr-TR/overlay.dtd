@@ -1,0 +1,4 @@
+<!ENTITY overlay.key "F">
+<!ENTITY overlay.menuitem.add.to.hide "FireSteg&apos;e Ekle (gizlenecek dosya)">
+<!ENTITY overlay.menuitem.add.to.cover "FireSteg&apos;e Ekle (kapak resmi)">
+<!ENTITY overlay.menuitem.add.to.extract "FireSteg&apos;e Ekle (ayıklancak dosya)">

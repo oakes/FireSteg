@@ -1,0 +1,26 @@
+<!ENTITY firesteg.tab.tools "Narzędzia">
+<!ENTITY firesteg.tab.settings "Ustawienia">
+<!ENTITY firesteg.caption.hide "Ukryj">
+<!ENTITY firesteg.caption.extract "Rozpakuj">
+<!ENTITY firesteg.caption.files "Pliki do ukrycia">
+<!ENTITY firesteg.caption.cover "Okładka obrazy">
+<!ENTITY firesteg.caption.where.images "Gdzie umieścić ukryte obrazki">
+<!ENTITY firesteg.caption.where.files "Gdzie rozpakowywać pliki">
+<!ENTITY firesteg.caption.where.java "Położenie wirtualnej maszyny Java">
+<!ENTITY firesteg.caption.memory "Pamięć, którą może wykorzystać wirtualna maszyna Java (w MB)">
+<!ENTITY firesteg.button.browse.dots "Przeglądaj...">
+<!ENTITY firesteg.button.remove "Usuń">
+<!ENTITY firesteg.button.save "Zapisz">
+<!ENTITY firesteg.description.filesize "Całkowity rozmiar:">
+<!ENTITY firesteg.description.zero "0.00 KB">
+<!ENTITY firesteg.description.space "Wolna przestrzeń:">
+<!ENTITY firesteg.description.void "0&#37; jest zajęte">
+<!ENTITY firesteg.radio.desktop "Na pulpicie">
+<!ENTITY firesteg.radio.hiddenfolder "W podfolderze FireSteg_Hidden w folderze profilu Firefoksa">
+<!ENTITY firesteg.radio.choose.dir "W poniższym katalogu...">
+<!ENTITY firesteg.radio.extractedfolder "W podfolderze FireSteg_Extracted w folderze profilu Firefoksa">
+<!ENTITY firesteg.radio.make.a.guess "Odgadnij">
+<!ENTITY firesteg.radio.choose.file "Używaj poniższego pliku...">
+<!ENTITY firesteg.dialog.file "Wybierz co najmniej jeden plik">
+<!ENTITY firesteg.dialog.cover "Wybierz co najmniej jeden obrazek w formacie PNG lub JPEG">
+<!ENTITY firesteg.dialog.extract "Wybierz co najmniej jeden obrazek w formacie PNG">

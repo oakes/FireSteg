@@ -1,0 +1,685 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type"text/css" ?>
+<!DOCTYPE page SYSTEM "chrome://firesteg/locale/firesteg.dtd" >
+<page id="sbFireSteg" title="FireSteg" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml" onload="initSidebar();">
+<stringbundleset id="stringbundleset">
+   <stringbundle id="firesteg_strings" src="chrome://firesteg/locale/firesteg.properties"/>
+</stringbundleset>
+<script>
+
+var arrayDelimiter = "*;*";
+var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);
+var pics = new Array();
+var loadedpics = new Array();
+var saveExtract = "";
+var saveHide = "";
+var saveVM = "";
+
+function initSidebar()
+{
+	var mainWindow = window.QueryInterface(Components.interfaces.nsIInterfaceRequestor).getInterface(Components.interfaces.nsIWebNavigation).QueryInterface(Components.interfaces.nsIDocShellTreeItem).rootTreeItem.QueryInterface(Components.interfaces.nsIInterfaceRequestor).getInterface(Components.interfaces.nsIDOMWindow);
+	var isFirstRun = prefs.getCharPref("extensions.firesteg.isFirstRun");
+	if (isFirstRun == "true") {
+		mainWindow.document.getElementById("sidebar-box").width=300;
+		prefs.setCharPref("extensions.firesteg.isFirstRun", "false");
+	}
+	
+	var extractToPref;
+	if (saveExtract == "") extractToPref = prefs.getCharPref("extensions.firesteg.extractTo");
+	else {
+		extractToPref = saveExtract;
+		prefs.setCharPref("extensions.firesteg.extractTo", saveExtract);
+	}
+	
+	if (extractToPref == "0") document.getElementById("extract").selectedIndex = 0;
+	else if(extractToPref == "1") document.getElementById("extract").selectedIndex = 1;
+	else {
+		var extractToPath = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+		extractToPath.initWithPath(extractToPref);
+		if (extractToPath.exists()) {
+			document.getElementById("extract").selectedIndex = 2;
+			document.getElementById("extract-to").value = extractToPref;
+		}
+		else {
+			document.getElementById("extract").selectedIndex = 0;
+			prefs.setCharPref("extensions.firesteg.extractTo", "");
+		}
+	}
+
+	var hideToPref;
+	if (saveHide == "") hideToPref = prefs.getCharPref("extensions.firesteg.hideTo");
+	else {
+		hideToPref = saveHide;
+		prefs.setCharPref("extensions.firesteg.hideTo", hideToPref);
+	}
+	
+	if (hideToPref == "0") document.getElementById("hide").selectedIndex = 0;
+	else if(hideToPref == "1") document.getElementById("hide").selectedIndex = 1;
+	else {
+		var hideToPath = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+		hideToPath.initWithPath(hideToPref);
+		if (hideToPath.exists()) {
+			document.getElementById("hide").selectedIndex = 2;
+			document.getElementById("hide-to").value = hideToPref;
+		}
+		else {
+			document.getElementById("hide").selectedIndex = 0;
+			prefs.setCharPref("extensions.firesteg.hideTo", "");
+		}
+	}
+
+	var javaVMPref;
+	if (saveVM == "") javaVMPref = prefs.getCharPref("extensions.firesteg.javaVM");
+	else {
+		javaVMPref = saveVM;
+		prefs.setCharPref("extensions.firesteg.javaVM", saveVM);
+	}
+	
+	if (javaVMPref == "") document.getElementById("javavm").selectedIndex = 0;
+	else {
+		document.getElementById("javavm").selectedIndex = 1;
+		document.getElementById("vm-location").value = javaVMPref;
+	}
+	
+	var maxMemPref = prefs.getCharPref("extensions.firesteg.maxMem");
+	var maxMemBox = document.getElementById("max-mem");
+	maxMemBox.value = maxMemPref;
+	
+	var hideArray = prefs.getCharPref("extensions.firesteg.hide-list").split(arrayDelimiter);
+	var coverArray = prefs.getCharPref("extensions.firesteg.cover-list").split(arrayDelimiter);
+	var extractArray = prefs.getCharPref("extensions.firesteg.extract-list").split(arrayDelimiter);
+
+	prefs.setCharPref("extensions.firesteg.hide-list", "");
+	prefs.setCharPref("extensions.firesteg.cover-list", "");
+	prefs.setCharPref("extensions.firesteg.extract-list", "");
+
+	var hideCount = hideArray.length - 1;
+	var hideCountDown = hideArray.length - 1;
+	var coverCount = coverArray.length - 1;
+	var coverCountDown = coverArray.length - 1;
+	var extractCount = extractArray.length - 1;
+	var extractCountDown = extractArray.length - 1;
+	var tempFile;
+
+	while (hideCountDown > 0) {
+		tempFile = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+		tempFile.initWithPath(hideArray[hideCount - hideCountDown]);
+		if (tempFile.exists()) addFile(tempFile, "hide-list", true);
+		hideCountDown--;
+	}
+	
+	while (coverCountDown > 0) {
+		tempFile = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+		tempFile.initWithPath(coverArray[coverCount - coverCountDown]);
+		if (tempFile.exists()) addFile(tempFile, "cover-list", true);
+		coverCountDown--;
+	}
+	
+	while (extractCountDown > 0) {
+		tempFile = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+		tempFile.initWithPath(extractArray[extractCount - extractCountDown]);
+		if (tempFile.exists()) addFile(tempFile, "extract-list", true);
+		extractCountDown--;
+	}
+}
+
+function setExtract()
+{
+	var element = document.getElementById("extract");
+	if (element.selectedIndex == "0" || element.selectedIndex == "1") {
+		saveExtract = prefs.getCharPref("extensions.firesteg.extractTo");
+		prefs.setCharPref("extensions.firesteg.extractTo", element.selectedIndex);
+		var list = document.getElementById("extract-to");
+		list.value = "";
+	}
+}
+
+function setHide()
+{
+	var element = document.getElementById("hide");
+	if (element.selectedIndex == "0" || element.selectedIndex == "1") {
+		saveHide = prefs.getCharPref("extensions.firesteg.hideTo");
+		prefs.setCharPref("extensions.firesteg.hideTo", element.selectedIndex);
+		var list = document.getElementById("hide-to");
+		list.value = "";
+	}
+}
+
+function setVMLocation()
+{
+	var element = document.getElementById("javavm");
+	if (element.selectedIndex == "0") {
+		saveVM = prefs.getCharPref("extensions.firesteg.javaVM");
+		prefs.setCharPref("extensions.firesteg.javaVM", "");
+		var list = document.getElementById("vm-location");
+		list.value = "";
+	}
+}
+
+function setMaxMem()
+{
+	var maxMemBox = document.getElementById("max-mem");
+	prefs.setCharPref("extensions.firesteg.maxMem", maxMemBox.value);
+}
+
+function setCoverSize(imageToAdd)
+{
+	if (imageToAdd != "") {
+		var picsCount = pics.length;
+		while (picsCount > 0) {
+			if (pics[picsCount - 1].id == imageToAdd) loadedpics[loadedpics.length] = pics[picsCount - 1];
+			picsCount--;
+		}
+	}
+	
+	var count = loadedpics.length;
+	var totalSize = 0;
+	
+	while (count > 0) {
+		totalSize = totalSize + (loadedpics[count - 1].naturalWidth * loadedpics[count - 1].naturalHeight * 3)/1000;
+		count--;
+	}
+	
+	var kilo = document.getElementById('firesteg_strings').getString("KiloByte");
+	document.getElementById('spinner').hidden = true;
+	document.getElementById('cover-list-size').value = totalSize.toFixed(2) + " " + kilo;
+	setPercent();
+}
+
+function setHideSize()
+{
+	var totalSize = 0;
+	var myArray = prefs.getCharPref("extensions.firesteg.hide-list").split(arrayDelimiter);
+	var count = myArray.length - 1;
+	var myFile;
+	
+	while (count > 0) {
+		myFile = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+		myFile.initWithPath(myArray[count - 1]);
+		totalSize = totalSize + myFile.fileSize/1000;
+		count--;
+	}
+	
+	var kilo = document.getElementById('firesteg_strings').getString("KiloByte");
+	document.getElementById('hide-list-size').value = totalSize.toFixed(2) + " " + kilo;
+	setPercent();
+}
+
+function setPercent()
+{
+  var filesizebox = document.getElementById('hide-list-size');
+  var coversizebox = document.getElementById('cover-list-size');
+  var filesize = parseFloat(filesizebox.value);
+  var coversize = parseFloat(coversizebox.value);
+  
+  var percentfull = document.getElementById('firesteg_strings').getString("PercentFull");
+  var nodis = document.getElementById('firesteg_strings').getString("NoDistortion");
+  var smalldis = document.getElementById('firesteg_strings').getString("SmallDistortion");
+  var dis = document.getElementById('firesteg_strings').getString("Distortion");
+  var hugedis = document.getElementById('firesteg_strings').getString("HugeDistortion");
+  
+  var percentbox = document.getElementById('percent');
+  
+  if (filesize == 0 || coversize == 0) percentbox.value = "0" + percentfull;
+  else if (filesize > coversize) percentbox.value = "&gt;100" + percentfull;
+  else {
+    var number = (filesize/coversize)*100;
+	var describe;
+	if (number &lt; 37.5) describe = "(" + nodis + ")";
+	else if (number &lt; 50) describe = "(" + smalldis + ")";
+	else if (number &lt; 75) describe = "(" + dis + ")";
+	else describe = "(" + hugedis + ")";
+    percentbox.value = number.toFixed(2) + percentfull + " " + describe;
+  }
+}
+
+function browseFiles(listID, theTitle)
+{
+  var nsIFilePicker = Components.interfaces.nsIFilePicker;
+  var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+  fp.init(window, theTitle, nsIFilePicker.modeOpenMultiple);
+  var res = fp.show();
+  if (res == nsIFilePicker.returnOK){ 
+	var entries = fp.files;
+	var tempFile;
+	var tempArray = new Array();
+	var ext;
+	var badCoverImage = false;
+	var badExtractImage = false;
+	var prefArray = prefs.getCharPref("extensions.firesteg." + listID).split(arrayDelimiter);
+
+	while (entries.hasMoreElements()) {
+		tempFile = entries.getNext();
+		tempFile = tempFile.QueryInterface(Components.interfaces.nsILocalFile);
+		ext = tempFile.path.substring(tempFile.path.lastIndexOf(".") + 1);
+		if (prefArray.indexOf(tempFile.path) &lt; 0) tempArray[tempArray.length] = tempFile;
+
+		if (!badCoverImage) badCoverImage = !(ext == "png" || ext == "jpeg" || ext == "jpg" || ext == "PNG" || ext == "JPEG" || ext == "JPG");
+		if (!badExtractImage) badExtractImage = !(ext == "png" || ext == "PNG");
+	}
+
+	if ((listID == "cover-list" &amp;&amp; badCoverImage)) {
+		if (!confirm(document.getElementById('firesteg_strings').getString("NoImage"))) return;
+	}
+	if (listID == "extract-list" &amp;&amp; badExtractImage) {
+		if (!confirm(document.getElementById('firesteg_strings').getString("NoPngImage"))) return;
+	}
+
+	var count = tempArray.length;
+	var countDown = tempArray.length;
+	while (countDown > 0) {
+		addFile(tempArray[count - countDown], listID, true);
+		countDown--;
+	}
+  }
+}
+
+function browseVMLocation()
+{
+	var nsIFilePicker = Components.interfaces.nsIFilePicker;
+	var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+	fp.init(window, 'Select the main Java executable', nsIFilePicker.modeOpen);
+	var res = fp.show();
+	if (res == nsIFilePicker.returnOK){ 
+		var thefile = fp.file;
+		prefs.setCharPref("extensions.firesteg.javaVM", thefile.path);
+		document.getElementById("javavm").selectedIndex = 1;
+		var VMBox = document.getElementById("vm-location");
+		VMBox.value = thefile.path;
+	}
+}
+
+function addFile(thefile, listID, shouldAddToPref)
+{
+	var list = document.getElementById(listID);
+	if (shouldAddToPref) addToPref(thefile.path, listID);
+	
+	switch(listID) {
+	case "hide-list":
+		var status = document.getElementById('hide-list-size');
+		var number = parseFloat(status.value);
+		list.appendItem(thefile.leafName);
+		setHideSize();
+		break;
+	case "cover-list":
+		list.appendItem(thefile.leafName);
+		document.getElementById('spinner').hidden = false;
+		pics[pics.length] = document.createElementNS("http://www.w3.org/1999/xhtml","img");
+		var ios = Components.classes["@mozilla.org/network/io-service;1"].getService(Components.interfaces.nsIIOService);
+		var fileHandler = ios.getProtocolHandler("file").QueryInterface(Components.interfaces.nsIFileProtocolHandler);
+		pics[pics.length-1].setAttribute('id', thefile.path);
+		pics[pics.length-1].setAttribute('onload', 'setCoverSize(this.id);');
+		pics[pics.length-1].setAttribute('src', fileHandler.getURLSpecFromFile(thefile));
+		break;
+	case "extract-list":
+		list.appendItem(thefile.leafName);
+		break;
+	}
+}
+
+function addToPref(filePath, listID)
+{
+	var currentList = prefs.getCharPref("extensions.firesteg." + listID);
+	prefs.setCharPref("extensions.firesteg." + listID, currentList + filePath + arrayDelimiter);
+}
+
+function browseFolders(listID)
+{
+	var nsIFilePicker = Components.interfaces.nsIFilePicker;
+	var fp = Components.classes["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+	fp.init(window, document.getElementById('firesteg_strings').getString("SelectFolder"), nsIFilePicker.modeGetFolder);
+	var res = fp.show();
+	if (res == nsIFilePicker.returnOK) {
+		var thefolder = fp.file;
+		var list = document.getElementById(listID);
+		list.value = thefolder.path;
+		if (listID == "extract-to") {
+			prefs.setCharPref("extensions.firesteg.extractTo", thefolder.path);
+			var extract = document.getElementById("extract");
+			extract.selectedIndex = 2;
+		}
+		else {
+			prefs.setCharPref("extensions.firesteg.hideTo", thefolder.path);
+			var hide = document.getElementById("hide");
+			hide.selectedIndex = 2;
+		}
+	}
+}
+
+function removeItem(listID)
+{
+	var listBox = document.getElementById(listID);
+	var tempArray;
+	var count = listBox.selectedCount;
+	var prefArray = prefs.getCharPref("extensions.firesteg." + listID).split(arrayDelimiter);
+	var indexArray = new Array();
+
+	while (count > 0)
+	{
+		var index = listBox.getIndexOfItem(listBox.selectedItems[count - 1]);
+		indexArray[indexArray.length] = index;
+		
+		var tempFile = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+		tempFile.initWithPath(prefArray[index]);
+		var tempFile2 = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("ProfD", Components.interfaces.nsIFile);
+		tempFile2.append("FireSteg_Temp");
+		tempFile2.append(tempFile.leafName);
+		if (tempFile2.exists() &amp;&amp; tempFile2.path == tempFile.path) tempFile2.remove(false);
+		
+		if (listID == "cover-list") {
+
+			var count2 = pics.length;
+			while (count2 > 0){
+				if (pics[count2 - 1].id == prefArray[index]) tempArray = pics.splice(count2 - 1, 1);
+				count2--;
+			}
+
+			var count3 = loadedpics.length;
+			while (count3 > 0){
+				if (loadedpics[count3 - 1].id == prefArray[index]) tempArray = loadedpics.splice(count3 - 1, 1);
+				count3--;
+			}
+			
+			setCoverSize("");
+		}
+		
+		count--;
+	}
+	
+	indexArray.sort(function(a,b){return a - b});
+	
+	count = indexArray.length;
+	while (count > 0) {
+		listBox.removeItemAt(indexArray[count - 1]);
+
+		var tempArray = prefArray.splice(indexArray[count - 1], 1);
+		tempArray = prefArray.join(arrayDelimiter);
+		prefs.setCharPref("extensions.firesteg." + listID, tempArray);
+
+		count--;
+	}
+
+	setHideSize();
+}
+
+function runFireSteg(isEncoding)
+{
+  var vmLocation = prefs.getCharPref("extensions.firesteg.javaVM");
+  var javaVM = Components.classes["@mozilla.org/file/local;1"].createInstance(Components.interfaces.nsILocalFile);
+
+  if (vmLocation == "") {
+    if (navigator.platform == "Win32") javaVM.initWithPath("C:\\Windows\\System32\\java.exe");
+    else javaVM.initWithPath("/usr/bin/java");
+  }
+  else javaVM.initWithPath(vmLocation);
+  
+  if (!javaVM.exists()) alert(document.getElementById('firesteg_strings').getString("NoJvmFound"));
+  
+  var process = Components.classes["@mozilla.org/process/util;1"].createInstance(Components.interfaces.nsIProcess);
+  process.init(javaVM);
+  
+  var firesteg = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("ProfD", Components.interfaces.nsIFile);
+  firesteg.append("extensions");
+  firesteg.append("firesteg@yourdomain.com");
+  firesteg.append("FireSteg.jar");
+  
+  var args;
+  var output;
+  
+  var maxMem = prefs.getCharPref("extensions.firesteg.maxMem");
+  
+  var password = "";
+  
+  if (isEncoding)
+  {
+	output = prefs.getCharPref("extensions.firesteg.hideTo");
+	
+    if(output=="0")
+    {
+      var desktop = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("Desk", Components.interfaces.nsIFile);
+      output = desktop.path;
+    }
+	else if (output=="1")
+	{
+		var profile = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("ProfD", Components.interfaces.nsIFile);
+		profile.append("FireSteg_Extracted");
+		output = profile.path;
+		if (!profile.exists() || !profile.isDirectory()) profile.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0777);
+	}
+	
+	password = document.getElementById("hide-pass").value;
+	if (password == "")
+		password = "analrape";
+	
+	args = ["-jar", "-Xmx" + maxMem + "m", firesteg.path, "-e", "-p", password, "-o", output];
+	
+	var myArray = prefs.getCharPref("extensions.firesteg.hide-list").split(arrayDelimiter);
+	var count = myArray.length - 1;
+	var countDown = myArray.length - 1;
+	var listBox = document.getElementById("hide-list");
+	var tempFile;
+	var tempFile2;
+
+	while (countDown>0)
+    {
+	args.push("-f");
+	
+	args.push(myArray[count-countDown]);
+    listBox.removeItemAt(0);
+	countDown--;
+    }
+	
+	myArray = prefs.getCharPref("extensions.firesteg.cover-list").split(arrayDelimiter);
+	count = myArray.length - 1;
+	countDown = myArray.length - 1;
+	listBox = document.getElementById("cover-list");
+	
+	while (countDown>0)
+    {
+	args.push("-c");
+	  
+	args.push(myArray[count-countDown]);
+    listBox.removeItemAt(0);
+	countDown--;
+    }
+	
+	document.getElementById("hide-pass").value = "";
+
+    prefs.setCharPref("extensions.firesteg.hide-list", "");
+    prefs.setCharPref("extensions.firesteg.cover-list", "");
+  }
+  else
+  {	
+	output = prefs.getCharPref("extensions.firesteg.extractTo");
+	
+    if(output=="0")
+    {
+      var desktop = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("Desk", Components.interfaces.nsIFile);
+      output = desktop.path;
+    }
+	else if (output=="1")
+	{
+		var profile = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("ProfD", Components.interfaces.nsIFile);
+		profile.append("FireSteg_Hidden");
+		output = profile.path;
+		if (!profile.exists() || !profile.isDirectory()) profile.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0777);
+	}
+	
+	password = document.getElementById("extract-pass").value;
+	if (password == "")
+		password = "analrape";
+	
+	args = ["-jar", "-Xmx" + maxMem + "m", firesteg.path, "-p", password, "-o", output];
+	
+	var myArray = prefs.getCharPref("extensions.firesteg.extract-list").split(arrayDelimiter);
+	var count = myArray.length - 1;
+	var countDown = myArray.length - 1;
+	var listBox = document.getElementById("extract-list");
+	var tempFile;
+	var tempFile2;
+
+	while (countDown>0)
+    {
+	args.push("-c");
+	  
+	args.push(myArray[count-countDown]);
+    listBox.removeItemAt(0);
+	countDown--;
+    }
+	
+	document.getElementById("extract-pass").value = "";
+
+	prefs.setCharPref("extensions.firesteg.extract-list", "");
+  }
+  
+  var tempFolder = Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("ProfD", Components.interfaces.nsIFile);
+  tempFolder.append("FireSteg_Temp");
+  args.push("-d");
+  args.push(tempFolder.path);
+  
+  var percentbox = document.getElementById('percent');
+  var filesizebox = document.getElementById('hide-list-size');
+  var coversizebox = document.getElementById('cover-list-size');
+  
+  var kilo = document.getElementById('firesteg_strings').getString("KiloByte");
+  var percentfull = document.getElementById('firesteg_strings').getString("PercentFull");
+  percentbox.value = "0" + percentfull;
+  filesizebox.value = "0.00 " + kilo;
+  coversizebox.value = "0.00 " + kilo;
+  pics = new Array();
+  loadedpics = new Array();
+  
+  process.run(false, args, args.length);
+}
+</script>
+<hbox>
+<spacer flex="1"/>
+<tabbox id="firesteg">
+	<tabs >
+		<tab label="&firesteg.caption.hide;"/>
+		<tab label="&firesteg.caption.extract;"/>
+		<tab label="&firesteg.tab.settings;"/>
+	</tabs>
+
+	<tabpanels>
+		<tabpanel>
+			<vbox>
+				<groupbox width="250">
+					<caption label="&firesteg.caption.files;"/>
+					<listbox id="hide-list" height="70" seltype="multiple" />
+					<hbox>
+						<button label="&firesteg.button.browse.dots;" oncommand="browseFiles('hide-list', '&firesteg.dialog.file;');" flex="1"/>
+						<button label="&firesteg.button.remove;" oncommand="removeItem('hide-list');"/>
+					</hbox>
+				</groupbox>
+				
+				<groupbox>
+					<caption label="&firesteg.caption.cover;"/>
+					<listbox id="cover-list" height="70" seltype="multiple" />
+					<hbox>
+						<button label="&firesteg.button.browse.dots;" oncommand="browseFiles('cover-list', '&firesteg.dialog.cover;');" flex="1"/>
+						<button label="&firesteg.button.remove;" oncommand="removeItem('cover-list');"/>
+					</hbox>
+				</groupbox>
+				<spacer flex="1"/>
+				<groupbox>
+					<hbox>
+						<vbox>
+							<description value="&firesteg.description.filesize; "/>
+							<description value="&firesteg.description.space; "/>
+						</vbox>
+						<vbox>
+							<description id="hide-list-size" value="&firesteg.description.zero;"/>
+							<description id="cover-list-size" value="&firesteg.description.zero;"/>
+						</vbox>
+						<spacer flex="1"/>
+					</hbox>
+					<hbox>
+						<description id="percent" value="&firesteg.description.void;"/>
+						<image id="spinner" src="spinner.gif" height='16' width='16' hidden='true' />
+						<spacer flex="1"/>
+					</hbox>
+				</groupbox>
+				<spacer flex="1"/>
+				<groupbox>
+					<hbox>
+						<textbox id="hide-pass" type="password" flex="1"/>
+						<button label="&firesteg.caption.hide;" oncommand="runFireSteg(true);" style="font-weight: bold" />
+					</hbox>
+				</groupbox>
+			</vbox>
+		</tabpanel>
+
+		<tabpanel>
+			<vbox>
+				<groupbox width="250">
+					<listbox id="extract-list" height="70" seltype="multiple" />
+					<hbox>
+						<button label="&firesteg.button.browse.dots;" oncommand="browseFiles('extract-list', '&firesteg.dialog.extract;');" flex="1" />
+						<button label="&firesteg.button.remove;" oncommand="removeItem('extract-list');"/>
+					</hbox>
+				</groupbox>
+				
+				<groupbox>
+					<hbox>
+						<textbox id="extract-pass" type="password" flex="1"/>
+						<button label="&firesteg.caption.extract;" oncommand="runFireSteg(false);" style="font-weight: bold" />
+					</hbox>
+				</groupbox>
+			</vbox>
+		</tabpanel>
+
+		<tabpanel>
+			<vbox>
+				<groupbox width="250">
+					<caption label="&firesteg.caption.where.images;" />
+					<radiogroup id="hide" onselect="setHide();">
+					<radio label="&firesteg.radio.desktop;" />
+					<radio label="&firesteg.radio.hiddenfolder;" />
+					<radio label="&firesteg.radio.choose.dir;" />
+					</radiogroup>
+					<hbox>
+						<textbox id="hide-to" value="" disabled="true" flex="1" />
+						<button label="&firesteg.button.browse.dots;" oncommand="browseFolders('hide-to');"/>
+					</hbox>
+				</groupbox>
+				
+				<groupbox>
+					<caption label="&firesteg.caption.where.files;" />
+					<radiogroup id="extract" onselect="setExtract();">
+					<radio label="&firesteg.radio.desktop;" />
+					<radio label="&firesteg.radio.extractedfolder;" />
+					<radio label="&firesteg.radio.choose.dir;" />
+					</radiogroup>
+					<hbox>
+						<textbox id="extract-to" value="" disabled="true" flex="1" />
+						<button label="&firesteg.button.browse.dots;" oncommand="browseFolders('extract-to');"/>
+					</hbox>
+				</groupbox>
+				
+				<groupbox>
+					<caption label="&firesteg.caption.where.java;" />
+					<radiogroup id="javavm" onselect="setVMLocation();">
+					<radio label="&firesteg.radio.make.a.guess;" />
+					<radio label="&firesteg.radio.choose.file;" />
+					</radiogroup>
+					<hbox>
+						<textbox id="vm-location" value="" disabled="true" flex="1" />
+						<button label="&firesteg.button.browse.dots;" oncommand="browseVMLocation();"/>
+					</hbox>
+				</groupbox>
+				
+				<groupbox>
+					<caption label="&firesteg.caption.memory;" />
+					<hbox>
+						<textbox id="max-mem" value="" flex="1" />
+						<button label="&firesteg.button.save;" oncommand="setMaxMem();"/>
+					</hbox>
+				</groupbox>
+			</vbox>
+		</tabpanel>
+	</tabpanels>
+</tabbox>
+<spacer flex="1"/>
+</hbox>
+</page>

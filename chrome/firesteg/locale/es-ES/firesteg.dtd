@@ -1,0 +1,26 @@
+<!ENTITY firesteg.tab.tools "Herramientas">
+<!ENTITY firesteg.tab.settings "Ajustes">
+<!ENTITY firesteg.caption.hide "Ocultar">
+<!ENTITY firesteg.caption.extract "Extraer">
+<!ENTITY firesteg.caption.files "Para ocultar archivos">
+<!ENTITY firesteg.caption.cover "Carátulas de imágenes">
+<!ENTITY firesteg.caption.where.images "Dónde poner las imágenes tras ocultar">
+<!ENTITY firesteg.caption.where.files "Dónde poner las imágenes tras extraer">
+<!ENTITY firesteg.caption.where.java "Ubicación de Java VM">
+<!ENTITY firesteg.caption.memory "La memoria de Java VM puede usarse (en MB)">
+<!ENTITY firesteg.button.browse.dots "Examinar...">
+<!ENTITY firesteg.button.remove "Eliminar">
+<!ENTITY firesteg.button.save "Guardar">
+<!ENTITY firesteg.description.filesize "Tamaño de archivos:">
+<!ENTITY firesteg.description.zero "0.00 KB">
+<!ENTITY firesteg.description.space "Espacio en imágenes:">
+<!ENTITY firesteg.description.void "0&#37; completado">
+<!ENTITY firesteg.radio.desktop "Escritorio">
+<!ENTITY firesteg.radio.hiddenfolder "Carpeta FireSteg_Hidden en el perfil de Firefox">
+<!ENTITY firesteg.radio.choose.dir "Selecciona tu propio directorio...">
+<!ENTITY firesteg.radio.extractedfolder "Carpeta FireSteg_Extracted en el perfil de Firefox">
+<!ENTITY firesteg.radio.make.a.guess "Hacer una buena adivinanza">
+<!ENTITY firesteg.radio.choose.file "Elige tu propio archivo...">
+<!ENTITY firesteg.dialog.file "Selecciona al menos un archivo">
+<!ENTITY firesteg.dialog.cover "Selecciona al menos una imagen PNG o JPEG">
+<!ENTITY firesteg.dialog.extract "Selecciona al menos una imagen PNG">
