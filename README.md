@@ -1,3 +1,7 @@
+![firesteg](images/33465.png)
+
+**This is a tool I made in college (around 2009) that hid arbitrary files inside of images. The UI worked as a Firefox extension and definitely doesn't work in modern Firefox versions. However, you can run FireSteg.jar from the command line and it should still work.**
+
 Introduction:
 
 FireSteg is a steganography sidebar extension powered by Java. Unlike many other steg programs, it:
